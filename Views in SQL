@@ -1,0 +1,13 @@
+## Views in SQL
+use sql_intro;
+select * from customers;
+create view cust_details as 
+select customerNumber,customerName,contactLastName,city,state from  customers;
+select * from cust_details;
+select* from products;
+select* from productlines;
+create view product_discription as
+select productName,MSRP,textDescription from products as p join productlines as pl on p.productLine=pl.productLine;
+select* from product_discription;
+
+select * from cust_details;
