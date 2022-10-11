@@ -1,0 +1,9 @@
+use company;
+select * from (select * from dup order by emp_id desc limit 3) as temp
+order by emp_id asc; 
+create table z (phon_num nvarchar(20) );
+insert into z values ('00125'),('7586'),('0001673'),('3697');
+select * from z;
+select * from employee;
+
+SELECT REPLACE(LTRIM(REPLACE(phon_num,'0',' ')),' ','0')as ph FROM z;
