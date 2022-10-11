@@ -1,0 +1,37 @@
+use sql_intro;
+select * from customers;
+select creditLimit from customers where creditLimit >100000 and creditLimit <110000 ;
+
+select salesRepEmployeeNumber as sap,country,creditLimit from customers where creditLimit>10000 group by country;
+select country, max(creditLimit) as maxcr from customers group by country;
+
+select customerNumber,city,state, max(creditLimit) over(partition by country order by city ) as mxcr from customers ;
+## Row number in windows function
+select * from data_1;
+select d.*,max(salary) over(partition by(dept) order by (SN)) as maxsal from data_1 d;
+select d.*, row_number() over(partition by(dept)) as rn from data_1 d;
+select * from 
+(select d.*, row_number() over(partition by(dept)) as rn from data_1 d) x
+where x.rn <2;
+
+##Rank function
+update data_1 set salary =34000 where SN=5;
+select d.*, rank() over(partition by dept order by salary desc) as mxsl from data_1 d;
+
+#Fetch top 3 country having max creditlitmit
+select c.*, rank() over(partition by country order by creditLimit desc) as mxcr from customers c;
+
+select * from (
+select c.*, rank() over(partition by country order by creditLimit desc) as mxcr from customers c) x
+where x.mxcr <4;
+
+## dense rank()
+select c.*, rank() over(partition by country order by creditLimit desc) as mx_rank ,
+dense_rank() over(partition by country order by creditLimit desc) as mxden_rk,
+row_number() over(partition by country order by creditLimit desc) as mx_roll from customers c;
+
+
+
+
+
+
