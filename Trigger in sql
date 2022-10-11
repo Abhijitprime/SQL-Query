@@ -1,0 +1,62 @@
+use sql_intro;
+select * from customers;
+select * from customers where addressLine2 is null;
+select * from productlines;
+select * from products;
+select p.productLine,p.productName,p.buyPrice,p.MSRP,pl.textDescription
+from Products p right join productlines pl on pl.productLine=p.productLine;
+
+call  new_procedure;
+select * from products where buyPrice >57.6;
+call n (@record);
+select @record as Totalrecords;
+
+select* from emp_detail;
+call age(@record,25);
+select @record as Totalrecords;
+select count(*) from emp_detail where age=25;
+
+select * from emp_detail;
+alter table emp_detail drop column  SN ;
+
+create trigger Addon
+before insert
+on emp_detail
+for each row
+set new.salary=new.salary+200;
+
+create trigger ageon
+before insert 
+on emp_detail
+for each row
+set new.age=new.age+2;
+insert into emp_detail values('pravin','m',26,'1997-09-03','bhopal',500);
+insert into emp_detail values('rani','f',24,'1996-06-03','pune',600);
+select * from emp_detail;
+create table ola(total_salary int);
+select* from ola;
+
+create trigger sal
+after insert 
+on emp_detail
+for each row
+insert into ola values(new.salary);
+
+
+insert into emp_detail values('br','m',24,'1998-06-03','kota',900);
+create trigger sap
+after insert 
+on emp_detail
+for each row
+insert into ola values(new.salary+20);
+delimiter $$
+create trigger age
+before insert
+on emp_detail
+for each row
+if new.age <0 then set new.age=0;
+end if;
+$$
+
+insert into emp_detail values('rr','m',-10,'1998-06-03','kota',900);
+select * from emp_detail;
