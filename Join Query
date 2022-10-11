@@ -1,0 +1,23 @@
+use join_1;
+select * from department;
+select* from employee;
+select* from project;
+select * from manager;
+
+##Inner join
+select e.emp_name,d.dept_name from employee e inner join department d on e.dept_id=d.id;
+select e.*,d.* from employee e inner join department d on e.dept_id=d.id;
+
+##union join
+select e.emp_name,d.dept_name from employee e left join department d on e.dept_id=d.id
+union
+select e.emp_name,d.dept_name from employee e right join department d on e.dept_id=d.id;
+
+##Cross join
+select e.emp_name,d.dept_name from employee e cross join department d;
+
+##left join
+select e.emp_name,d.dept_name,m.man_name,p.project_name from employee e left join department d on 
+e.emp_id=d.id
+inner join project p on p. team_member_id = e.emp_id
+left join manager m on m.man_id=e.dept_id;
