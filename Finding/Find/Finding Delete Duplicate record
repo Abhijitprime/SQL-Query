@@ -1,0 +1,87 @@
+use company;
+create table dup (emp_id int not null primary key auto_increment,
+first_name varchar(20),
+last_name varchar(20),
+salary int,
+joning_date datetime,
+department_name varchar(20));
+
+
+
+select * from dup;
+desc dup;
+
+insert into dup  values
+(0001,'Abhijit','Datir',50000,'2015-12-11 09.00.00','Development'),
+(0002,'Abhijit','Datir',50000,'2015-12-11 09.00.00','Development'),
+(0003,'Abhijit','Datir',50000,'2015-12-11 09.00.00','Development'),
+(0004,'Abhi','Ratir',40000,'2015-09-11 09.00.00','HR'),
+(0005,'Raju','Raut',30000,'2014-1-21 09.00.00','DS'),
+(0006,'Raju','Raut',30000,'2014-1-21 09.00.00','DS'),
+(0007,'Rani','Thate',20000,'2012-12-19 09.00.00','DA'),
+(0008,'Mohit','Bokade',70000,'2015-10-13 09.00.00','QA'),
+(0009,'Mohit','Bokade',70000,'2015-10-13 09.00.00','QA'),
+(0010,'Rohit','kakde',90000,'2016-08-11 09.00.00','Development');
+
+select * from dup;
+
+select  first_name,last_name,salary,joning_date,department_name,count(*) from dup
+group by first_name,last_name,salary,joning_date,department_name  having count(*)>1;
+
+delete from dup where emp_id not in( select max(emp_id)  from dup group by
+first_name,last_name,salary,joning_date,department_name );
+
+## with cte
+with duplicate_cte as(
+select emp_id,first_name,last_name,salary,joning_date,department_name,row_number() 
+over(partition by first_name,last_name,salary,joning_date,department_name order by emp_id) as temp
+ from dup ) 
+ delete from duplicate_cte where temp>1;
+ 
+ 
+ select first_name ,last_name ,salary ,count(*) from dup group by first_name ,last_name ,salary
+ having count(*)>1;
+ 
+ delete from dup where emp_id not in (select max(emp_id) from dup group by first_name ,last_name ,salary);
+ 
+with cte as 
+(select emp_id ,first_name,last_name,salary,row_number() over(partition by first_name,last_name,salary order by emp_id)as temp
+from dup )
+delete from cte where temp>1;
+
+select distinct(salary)  from (
+select * ,dense_rank() over(order by salary desc ) as nth_salary from dup) as temp
+where nth_salary=3;
+ 
+ select distinct(salary) from dup order  by salary desc limit 1;
+ 
+select emp_id ,first_name ,last_name ,count(*) from dup group by first_name ,last_name  having count(*)>1;
+
+## even record
+select * from dup where mod(emp_id,2)=0;
+
+# odd record
+select * from dup where mod(emp_id,2)=1;
+
+select * from dup;
+
+# select 1st and last record
+
+select * from dup where emp_id=(select min(emp_id) from dup);
+
+## copy all row or few column or only schemas
+
+create table new_dup as select * from dup;
+select * from new_dup;
+create table record as select emp_id ,first_name,salary from dup;
+
+create table schemas_tab as select * from dup where 1=2;
+select * from schemas_tab;
+desc schemas_tab;
+
+## return employee working in same departmanet
+select * from dup;
+select d.emp_id,d.first_name,d.last_name,d.department_name from dup d,dup d1
+where d.department_name=d1.department_name
+and d.emp_id != d1.emp_id;
+
