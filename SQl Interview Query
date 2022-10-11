@@ -1,0 +1,147 @@
+use prime;
+show tables;
+select* from orders;
+# Find lowest price of product in in table orders
+select product_name, min(unite_price) as min_price from orders group by product_name;
+select product_name, min(unite_price) as min_price from orders;
+
+# find unique department/product_name 
+select distinct product_name from orders;
+
+## find unique department/product_name with lenght of it 
+select distinct product_name ,length( product_name ) as len from orders;
+
+
+#datediff function -return numder of dates between 2 dates
+select datediff(now(),'2022-03-30');
+select datediff('2022-03-30','2023-04-30');
+
+use join_1;
+# dept with more than 2 employee
+select * from employee;
+select dept_id, count(emp_id) from employee group by dept_id having count(emp_id)<2;
+use group_by;
+select * from data_1;
+select dept,count(Id) from data_1 group by dept having count(Id) >2;
+
+
+## display details of employee of all department expect finance.
+select * from data_1 where dept <> 'finance';
+select * from data_1 where dept != 'finance';
+
+# emp doj before 1996-06-08  and after 1996-07-09 .
+select * from data_1 where doj > '1996-06-07' and doj < '1996-09-11';
+
+
+# find 3rd highest salary
+select * from (select * from data_1 order by salary desc limit 3) as s order by salary  asc limit 1;
+
+
+# find alternate record  table
+
+select * from data_1 where Id % 2= 0;
+
+select * from data_1 where Id % 2 != 0;
+
+with CTE as 
+(select *, row_number ()over (order by Id) as rn 
+from data_1)
+select * from CTE where rn % 2=1;
+
+use group_by;
+select * from data_1;
+ALTER TABLE Data_1
+add manger_id int null;
+
+# even record
+with CTE as 
+(select * , row_number() over (order by Id) as rn from data_1)
+select * from CTE where  rn % 2=0;
+
+#Odd Record
+with cte as 
+(select*, row_number() over(order by Id) as rn from data_1)
+select*from CTE where rn% 2!=0;
+
+## fetch duplicate value from table
+select Id,name,sex,age,doj,dept,city_name,salary,count(*) 
+from data_1 group by Id,name,sex,age,doj,dept,city_name,salary
+having count(Id) >1 and count(name)>1 and count(sex) >1 and count(age)>1
+and count(doj)>1 and count(dept)>1 and count(city_name) >1
+and count(salary)>1 ;
+
+## employee with 2EE in table
+select length(replace(upper(name),'A','')) from data_1;
+
+select*from data_1 where length(name)-length(replace(upper(name),'A',''))=2;
+update data_1
+set name ='AAbhhijit' 
+where Id=2;
+
+select * from data_1;
+SELECT COUNT(*) FROM data_1;
+update data_1
+set manger_id ='6' 
+where Id=7;
+
+## extract string
+select substr('Abhijit',4,3);  
+select substring('Abhijit',4,3);
+
+# how to use self joint
+select d.Id,d.name,d.sex,d.age,d.doj,d.dept,d.city_name,d.salary,d.manger_id,
+m.name as manger_name from data_1 as d join data_1 as m on d.manger_id = m.Id;
+
+#fetch list of employee with same salary
+select distinct d.Id,d.name,d.salary from data_1  d ,data_1 dl where d.salary=dl.salary and d.Id != dl.Id;
+SELECT Id, name, salary From
+ (
+ SELECT Id,name,salary, Count(*) Over (Partition by salary ) as SalaryCnt
+ FROM data_1
+ ) s1
+WHERE SalaryCnt>1
+ORDER By salary Desc;
+
+##print Row twice
+select name,salary from data_1 as d
+where d.dept='HR'
+union all
+select name,salary from data_1 as d1
+where d1.dept='HR';
+
+
+#using case statemnet
+create table num (number int not null);
+insert into num values(0),(3),(1),(2),(3);
+select * from num;
+select number,
+case when number=1 then number +10
+when number=2 then number +20
+else number end as add_number from num;
+
+use group_by;
+create table num_1 (number int not null);
+insert into num_1 values(-1),(2),(-3),(4),(-5),(-6),(7);
+select * from num_1;
+## find sum of positive value and negative value;
+select sum( case when number >0 then number else  0 end ) as pos_number,
+sum( case when number <0 then number else 0 end) as neg_number from num_1;
+
+
+
+# check constaint 
+
+create table dum ( eid int primary key ,city varchar(30) check (city='mumbai'), age int check (age>10));
+insert into dum (eid,city,age) values(101,'delhi',9);
+insert into dum (eid,city,age) values(101,'mumbai',11);
+select * from dum;
+
+##using left joint, find values which not match in A table
+create table A (num_int int not null);
+insert into A(num_int) values (122),(12),(53),(45),(12);
+select * from A;
+
+create table B (num_int int not null);
+insert into B (num_int) values (122),(11),(53),(45),(32);
+select * from B;
+select num_int from B left join A using (num_int) where A.Num_int is null;
